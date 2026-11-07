@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compra amb cap: els teus drets com a consumidor</title>
+<style>
+:root{--ink:#1b1340;--paper:#f6f4ff;--v:#5b3df5;--pink:#ff3d7f;--mint:#17a673;--sun:#ffd23f;--line:#d9d3f7}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font:17px/1.5 "Avenir Next","Segoe UI",system-ui,sans-serif;min-height:100vh}
+main{max-width:640px;margin:0 auto;padding:16px 18px 40px}
+.prog{display:flex;gap:6px;margin:4px 0 22px}
+.prog i{flex:1;height:8px;border-radius:8px;background:var(--line);transition:background .3s}
+.prog i.on{background:var(--v)}
+h1{font-size:clamp(32px,8vw,46px);line-height:1.05;margin:0 0 14px;font-weight:900;letter-spacing:-.02em}
+h2{font-size:24px;line-height:1.2;margin:0 0 8px;font-weight:800}
+p{margin:0 0 14px}
+.muted{color:#5d5688;font-size:15px}
+.btn{display:inline-block;border:0;border-radius:14px;background:var(--v);color:#fff;font:inherit;font-weight:800;padding:13px 22px;cursor:pointer;transition:transform .12s}
+.btn:hover{transform:translateY(-2px)}
+.btn:disabled{background:#b9b2e6;cursor:not-allowed;transform:none}
+.btn.alt{background:#fff;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+:focus-visible{outline:3px solid var(--pink);outline-offset:3px}
+.notif{display:flex;gap:12px;align-items:center;background:#fff;border-radius:18px;padding:12px 16px;margin:0 0 22px;box-shadow:0 8px 24px rgba(27,19,64,.12);transform:rotate(-1.5deg);animation:pop .6s ease-out both}
+.notif b{display:block}
+.notif span.ic{font-size:30px}
+@keyframes pop{from{transform:translateY(-30px) rotate(-6deg);opacity:0}}
+/* shop mock */
+.shop{background:#fff;border-radius:18px;border:2px solid var(--ink);overflow:hidden;margin:14px 0}
+.bar{background:var(--ink);color:#fff;font-size:13px;padding:7px 14px;font-family:ui-monospace,Menlo,monospace}
+.shop-body{padding:14px;display:grid;gap:10px}
+.prod{display:flex;gap:12px;align-items:center}
+.prod .img{font-size:54px;background:var(--paper);border-radius:14px;padding:6px 12px}
+.hs{display:block;width:100%;text-align:left;font:inherit;border:2px dashed var(--line);background:#fff;border-radius:12px;padding:9px 12px;cursor:pointer;color:var(--ink)}
+.hs:hover{border-color:var(--v)}
+.hs.flag{border:2px solid var(--pink);background:#ffe6ee}
+.hs.good{border:2px solid var(--mint);background:#e0f6ec}
+.price s{color:#8a84ad}.price b{font-size:24px;color:var(--pink)}
+.fb{min-height:64px;margin:12px 0;padding:12px 14px;border-radius:14px;background:#fff;border-left:6px solid var(--v)}
+.fb.ok{border-color:var(--mint)}.fb.no{border-color:var(--pink)}
+.count{font-weight:800;margin:6px 0}
+/* chat */
+.chat{display:grid;gap:10px;margin:14px 0}
+.b{max-width:85%;padding:10px 14px;border-radius:18px;animation:pop .35s ease-out both}
+.b.me{background:var(--v);color:#fff;justify-self:end;border-bottom-right-radius:4px}
+.b.th{background:#fff;border-bottom-left-radius:4px;box-shadow:0 2px 8px rgba(27,19,64,.08)}
+.opts{display:grid;gap:10px}
+.opt{font:inherit;text-align:left;border:2px solid var(--ink);background:#fff;color:var(--ink);border-radius:14px;padding:12px 14px;cursor:pointer}
+.opt:hover:not(:disabled){background:var(--sun)}
+.opt.ok{background:#e0f6ec;border-color:var(--mint)}
+.opt.no{background:#ffe6ee;border-color:var(--pink)}
+.card{background:#fff;border:2px solid var(--ink);border-radius:20px;padding:26px 20px;text-align:center;margin:14px 0;box-shadow:6px 6px 0 var(--ink)}
+.card .q{font-size:22px;font-weight:800;line-height:1.25}
+.row{display:flex;gap:12px;justify-content:center;margin-top:18px}
+.score{font-size:64px;font-weight:900;color:var(--v);line-height:1}
+.tips{display:grid;gap:10px;margin:18px 0}
+.tip{background:#fff;border-radius:14px;padding:12px 14px;display:flex;gap:12px}
+.tip span{font-size:26px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<div class="prog" id="prog" aria-hidden="true"></div>
+<div id="app" aria-live="polite"></div>
+</main>
+<script>
+var app=document.getElementById('app'),prog=document.getElementById('prog'),pts=0,MAX=7,timer=null;
+for(var i=0;i<5;i++)prog.appendChild(document.createElement('i'));
+function setProg(n){[].forEach.call(prog.children,function(e,i){e.className=i<=n?'on':''})}
+function go(n){clearInterval(timer);setProg(n);app.innerHTML='';SCREENS[n]();window.scrollTo(0,0)}
+function el(h){var d=document.createElement('div');d.innerHTML=h;return d}
+
+/* 0 · Intro */
+function intro(){
+  pts=0;
+  app.innerHTML='<div class="notif"><span class="ic">📦</span><div><b>La teva comanda ha arribat</b><span class="muted">Ara ve la part difícil…</span></div></div>'+
+  '<h1>Compra amb cap</h1><p>Comprar des del mòbil és fàcil. Saber què fer quan alguna cosa surt malament, no tant. En uns minuts practicaràs com reaccionar en tres situacions reals.</p>'+
+  '<p class="muted">Pilot · 3 escenes i un resum</p><button class="btn" id="st">Comencem</button>';
+  document.getElementById('st').onclick=function(){go(1)};
+}
+
+/* 1 · Detecta les trampes */
+function scene1(){
+  var items=[
+   {t:'<span class="price"><s>129 €</s> <b>25 €</b></span> &nbsp;−80% només avui',f:1,m:'Un descompte del 80% en una marca coneguda és molt sospitós: pot ser una estafa o una falsificació.'},
+   {t:'⏱ L’oferta s’acaba en <b id="cd">09:59</b>',f:1,m:'Urgència falsa. Fixa-t’hi: quan arriba a zero, el comptador torna a començar. Volen que compris sense pensar.'},
+   {t:'☑ Afegeix assegurança d’enviament (+3,99 €)',f:1,m:'Casella premarcada: no et poden cobrar extres si no els acceptes tu expressament. Desmarca-la abans de pagar.'},
+   {t:'🏢 Dades de la botiga: <i>no consten</i>',f:1,m:'Sense nom, adreça ni correu de la botiga no saps a qui reclamar. Busca l’«Avís legal» abans de pagar.'},
+   {t:'↩ Devolució: 14 dies',f:0,m:'Això és bon senyal! A les compres online tens 14 dies naturals per desistir sense donar explicacions (amb algunes excepcions). Comprova-ho a les condicions de la botiga.'}
+  ],found=0;
+  app.innerHTML='<h2>Escena 1 · Una oferta massa bona</h2><p>Has vist unes sabatilles a Instagram. Toca els elements de la botiga que et fan dubtar. N’hi ha 4 de sospitosos… i un de bo.</p>'+
+  '<div class="shop"><div class="bar">sneaker-oferta24.shop/pagament</div><div class="shop-body"><div class="prod"><div class="img">👟</div><div><b>Sabatilles X-Pro</b><br><span class="muted">Només queden 2 unitats</span></div></div><div id="hs"></div></div></div>'+
+  '<div class="count" id="cnt">Trampes trobades: 0/4</div><div class="fb" id="fb">Toca un element per veure què en pensem.</div><button class="btn" id="nx" disabled>Següent escena</button>';
+  var box=document.getElementById('hs'),fb=document.getElementById('fb'),nx=document.getElementById('nx');
+  items.forEach(function(it){
+    var b=document.createElement('button');b.className='hs';b.innerHTML=it.t;b.style.marginBottom='8px';
+    b.onclick=function(){
+      if(it.f&&!b.dataset.d){b.dataset.d=1;found++;b.classList.add('flag');document.getElementById('cnt').textContent='Trampes trobades: '+found+'/4';
+        if(found==4){pts+=1;nx.disabled=false}}
+      if(!it.f)b.classList.add('good');
+      fb.className='fb '+(it.f?'no':'ok');fb.textContent=it.m;
+    };
+    box.appendChild(b);
+  });
+  var t=599,cd=document.getElementById('cd');
+  timer=setInterval(function(){t=t<=0?599:t-1;var c=document.getElementById('cd');if(c)c.textContent=('0'+Math.floor(t/60)).slice(-2)+':'+('0'+t%60).slice(-2)},1000);
+  nx.onclick=function(){go(2)};
+}
+
+/* 2 · Xat: decideix */
+function scene2(){
+  var steps=[
+   {say:'Fa 5 dies vas comprar uns auriculars de 40 € des del mòbil. Han arribat i només sona un costat. Què fas?',
+    o:[{t:'Ho deixo estar, total són 40 €.',ok:0,fb:'Perds diners i drets. Reclamar és gratis i 40 € també són teus.'},
+       {t:'Escric a la botiga, explico què passa i guardo captures i el justificant.',ok:1,fb:'Molt bé. Reclamar per escrit i amb proves és sempre el primer pas.'},
+       {t:'Els trenco i penjo una ressenya furiosa.',ok:0,fb:'Una ressenya no et retorna els diners, i trencar-los pot fer-te perdre la reclamació.'}]},
+   {say:'La botiga respon: «Ho sentim, no fem devolucions».',
+    o:[{t:'Val, gràcies igualment.',ok:0,fb:'No cal acceptar-ho: un cartell de «no es fa devolució» no elimina els teus drets.'},
+       {t:'Els recordo la garantia legal: tinc dret a reparació, substitució o devolució dels diners.',ok:1,fb:'Exacte. Els productes nous tenen 3 anys de garantia legal i la botiga no t’ho pot negar.'},
+       {t:'Demano el full de reclamacions o contacto amb l’OMIC o l’Agència Catalana del Consum.',ok:1,fb:'Molt bé: és el pas següent si la botiga no rectifica. Reclamar a l’OMIC del teu ajuntament és gratuït.'}]}
+  ];
+  app.innerHTML='<h2>Escena 2 · Aquest producte no funciona</h2><div class="chat" id="chat"></div><div class="opts" id="opts"></div><div class="fb" id="fb" style="display:none"></div><button class="btn" id="nx" style="display:none"></button>';
+  var chat=document.getElementById('chat'),opts=document.getElementById('opts'),fb=document.getElementById('fb'),nx=document.getElementById('nx');
+  function show(i){
+    var s=steps[i];chat.appendChild(el('<div class="b th">'+s.say+'</div>').firstChild);
+    opts.innerHTML='';fb.style.display='none';nx.style.display='none';
+    s.o.forEach(function(o){
+      var b=document.createElement('button');b.className='opt';b.textContent=o.t;
+      b.onclick=function(){
+        [].forEach.call(opts.children,function(x){x.disabled=true});
+        b.classList.add(o.ok?'ok':'no');
+        chat.appendChild(el('<div class="b me">'+o.t+'</div>').firstChild);
+        fb.className='fb '+(o.ok?'ok':'no');fb.textContent=o.fb;fb.style.display='block';
+        if(o.ok)pts+=1;
+        nx.textContent=i<steps.length-1?'Continua':'Següent escena';nx.className='btn';nx.style.display='inline-block';
+        nx.onclick=function(){i<steps.length-1?show(i+1):go(3)};
+      };
+      opts.appendChild(b);
+    });
+  }
+  show(0);
+}
+
+/* 3 · Cert o mite */
+function scene3(){
+  var Q=[
+   {q:'Si ets menor d’edat, pots comprar online sense cap límit.',a:0,e:'Mite. Per a la majoria de contractes necessites el consentiment d’una persona adulta.'},
+   {q:'A les compres online pots tornar el producte en 14 dies sense dir per què.',a:1,e:'Cert. És el dret de desistiment (amb excepcions, com els productes personalitzats).'},
+   {q:'Si el cartell diu «No es fan devolucions», no et poden tornar els diners mai.',a:0,e:'Mite. Un cartell no elimina els teus drets: si el producte és defectuós, la garantia legal s’aplica igualment.'},
+   {q:'Si un influencer recomana un producte, ho ha d’indicar si és publicitat.',a:1,e:'Cert. La publicitat ha d’estar identificada: busca etiquetes com #publi o «col·laboració».'}
+  ],i=0;
+  function draw(){
+    app.innerHTML='<h2>Escena 3 · Cert o mite?</h2><p class="muted">Pregunta '+(i+1)+' de '+Q.length+'</p><div class="card"><div class="q">'+Q[i].q+'</div><div class="row"><button class="btn" id="t">Cert</button><button class="btn alt" id="f">Mite</button></div></div><div class="fb" id="fb" style="display:none"></div><button class="btn" id="nx" style="display:none">Continua</button>';
+    function ans(v){
+      var ok=v==Q[i].a;if(ok)pts+=1;
+      document.getElementById('t').disabled=document.getElementById('f').disabled=true;
+      var fb=document.getElementById('fb');fb.className='fb '+(ok?'ok':'no');fb.textContent=(ok?'Correcte! ':'Ostres. ')+Q[i].e;fb.style.display='block';
+      var nx=document.getElementById('nx');nx.style.display='inline-block';
+      nx.onclick=function(){i++;i<Q.length?draw():go(4)};
+    }
+    document.getElementById('t').onclick=function(){ans(1)};
+    document.getElementById('f').onclick=function(){ans(0)};
+  }
+  draw();
+}
+
+/* 4 · Resultat */
+function end(){
+  var m=pts>=6?'Ets un consumidor/a de nivell expert!':pts>=4?'Vas pel bon camí. Repassa els punts clau.':'No passa res: ara ja saps per on començar.';
+  app.innerHTML='<h2>El teu resultat</h2><div class="score">'+pts+'/'+MAX+'</div><p>'+m+'</p><div class="tips">'+
+  '<div class="tip"><span>🔍</span><div><b>Abans de pagar</b><br>Desconfia de preus impossibles, comptadors i caselles premarcades. Busca les dades de la botiga.</div></div>'+
+  '<div class="tip"><span>↩</span><div><b>14 dies</b><br>Pots desistir d’una compra online sense donar explicacions.</div></div>'+
+  '<div class="tip"><span>🛡</span><div><b>3 anys</b><br>Garantia legal en productes nous. Reclama per escrit i guarda les proves.</div></div>'+
+  '<div class="tip"><span>📣</span><div><b>Si no et fan cas</b><br>Full de reclamacions, OMIC del teu ajuntament o Agència Catalana del Consum.</div></div></div>'+
+  '<button class="btn" id="re">Torna a començar</button>';
+  document.getElementById('re').onclick=function(){go(0)};
+}
+var SCREENS=[intro,scene1,scene2,scene3,end];
+go(0);
+</script>
+</body>
+</html>
